@@ -1,10 +1,27 @@
-import { Exclude } from 'class-transformer';
+import { BaseTable } from 'src/common/entity/base.entity';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { MovieDetail } from './movie-detail.entity';
 
-export class Movie {
+@Entity()
+export class Movie extends BaseTable {
+  @PrimaryGeneratedColumn()
   id: number;
 
+  @Column()
   title: string;
 
-  @Exclude()
+  @Column()
   genre: string;
+
+  @OneToOne(() => MovieDetail, (movieDetail) => movieDetail.movie, {
+    cascade: true,
+  })
+  @JoinColumn()
+  detail: MovieDetail;
 }

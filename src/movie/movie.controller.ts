@@ -9,6 +9,7 @@ import {
   ParseIntPipe,
   UseInterceptors,
   ClassSerializerInterceptor,
+  Patch,
 } from '@nestjs/common';
 import { MovieService } from './movie.service';
 import { CreateMovieDto } from './dto/create-movie.dto';
@@ -34,7 +35,7 @@ export class MovieController {
     return this.movieService.createMovie(body);
   }
 
-  @Post(':id')
+  @Patch(':id')
   updateMovie(
     @Param('id', ParseIntPipe) id: number,
     @Body() body: UpdateMovieDto,
