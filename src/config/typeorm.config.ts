@@ -1,10 +1,11 @@
 import { ConfigService } from '@nestjs/config';
 import { TypeOrmModuleAsyncOptions } from '@nestjs/typeorm';
 import { Director } from 'src/director/entity/director.entity';
+import { Genre } from 'src/genre/entity/genre.entity';
 import { MovieDetail } from 'src/movie/entity/movie-detail.entity';
 import { Movie } from 'src/movie/entity/movie.entity';
 
-const entities = [Movie, MovieDetail, Director];
+const entities = [Movie, MovieDetail, Director, Genre];
 
 const typeOrmConfig: TypeOrmModuleAsyncOptions = {
   useFactory: (configService: ConfigService) => ({
