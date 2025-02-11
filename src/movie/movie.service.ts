@@ -102,12 +102,12 @@ export class MovieService {
         .of(movieId)
         .add(genres.map((genre) => genre.id));
 
+      await qr.commitTransaction();
+
       const newMovie = await this.movieRepository.findOne({
         where: { id: movieId },
         relations: ['detail', 'director', 'genres'],
       });
-
-      await qr.commitTransaction();
 
       return newMovie;
     } catch (error) {
