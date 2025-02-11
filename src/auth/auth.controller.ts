@@ -3,9 +3,11 @@ import {
   Controller,
   Headers,
   Post,
+  Request,
   UseInterceptors,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
+import { RequestWithUser } from './middleware/bearer-token.middleware';
 
 @Controller('auth')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -23,11 +25,9 @@ export class AuthController {
   }
 
   @Post('token/access')
-  async rotateAccessToken(@Headers('authorization') refreshToken: string) {
-    const payload = await this.authService.parseBearerToken(refreshToken, true);
-
+  async rotateAccessToken(@Request() request: RequestWithUser) {
     return {
-      accessToken: await this.authService.issueToken(payload, false),
+      accessToken: await this.authService.issueToken(request.user, false),
     };
   }
 }
