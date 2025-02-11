@@ -11,6 +11,9 @@ const envConfig: ConfigModuleOptions = {
     DB_USERNAME: Joi.string().required(),
     DB_PASSWORD: Joi.string().required(),
     DB_DATABASE: Joi.string().required(),
+    HASH_ROUNDS: Joi.number().required(),
+    REFRESH_TOKEN_SECRET: Joi.string().required(),
+    ACCESS_TOKEN_SECRET: Joi.string().required(),
   }),
 };
 
