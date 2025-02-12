@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   BadRequestException,
   Injectable,
@@ -53,6 +52,9 @@ export class BearerTokenMiddleware implements NestMiddleware {
       req.user = payload;
       next();
     } catch (error) {
+      if (error.name === 'TokenExpiredError') {
+        throw new UnauthorizedException('토큰이 만료됐습니다.');
+      }
       next();
     }
   }
