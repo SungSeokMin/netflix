@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   BadRequestException,
   Injectable,
@@ -28,10 +29,10 @@ export class BearerTokenMiddleware implements NestMiddleware {
       return;
     }
 
-    const token = this.validateBearerToken(header);
-
     try {
-      const decodedPayload = await this.jwtService.decode(token);
+      const token = this.validateBearerToken(header);
+
+      const decodedPayload = this.jwtService.decode(token);
 
       if (
         decodedPayload.type !== 'access' &&
@@ -52,9 +53,7 @@ export class BearerTokenMiddleware implements NestMiddleware {
       req.user = payload;
       next();
     } catch (error) {
-      console.error(error);
-
-      throw new UnauthorizedException('Refresh 토큰이 만료됐습니다.');
+      next();
     }
   }
 

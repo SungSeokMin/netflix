@@ -12,8 +12,9 @@ import { GenreModule } from './genre/genre.module';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import typeOrmConfig from './config/typeorm.config';
-import envConfig from './config/env';
+import envConfig from './config/env.config';
 import { BearerTokenMiddleware } from './auth/middleware/bearer-token.middleware';
+import providers from './config/provider.config';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { BearerTokenMiddleware } from './auth/middleware/bearer-token.middleware
     UserModule,
     AuthModule,
   ],
+  providers,
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
