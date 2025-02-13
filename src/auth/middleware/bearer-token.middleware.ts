@@ -33,10 +33,7 @@ export class BearerTokenMiddleware implements NestMiddleware {
 
       const decodedPayload = this.jwtService.decode(token);
 
-      if (
-        decodedPayload.type !== 'access' &&
-        decodedPayload.type !== 'refresh'
-      ) {
+      if (decodedPayload.type !== 'access' && decodedPayload.type !== 'refresh') {
         throw new UnauthorizedException('잘못된 토큰입니다.');
       }
 

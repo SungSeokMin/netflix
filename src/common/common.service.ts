@@ -7,10 +7,7 @@ import { CursorPaginationDto } from './dto/cursor-pagination.dto';
 export class CommonService {
   constructor() {}
 
-  applyPagePaginationParamsToQb<T>(
-    qb: SelectQueryBuilder<T>,
-    dto: PagePaginationDto,
-  ) {
+  applyPagePaginationParamsToQb<T>(qb: SelectQueryBuilder<T>, dto: PagePaginationDto) {
     const { page, take } = dto;
 
     if (page && take) {
@@ -21,10 +18,7 @@ export class CommonService {
     }
   }
 
-  async applyCursorPaginationParamsToQb<T>(
-    qb: SelectQueryBuilder<T>,
-    dto: CursorPaginationDto,
-  ) {
+  async applyCursorPaginationParamsToQb<T>(qb: SelectQueryBuilder<T>, dto: CursorPaginationDto) {
     const { cursor, take } = dto;
     let { order } = dto;
 
@@ -37,18 +31,11 @@ export class CommonService {
       const { values } = cursorObj;
 
       const columns = Object.keys(values);
-      const comparisonOperator = order.some((o) => o.endsWith('DESC'))
-        ? '<'
-        : '>';
-      const whereConditions = columns
-        .map((column) => `${qb.alias}.${column}`)
-        .join(',');
+      const comparisonOperator = order.some((o) => o.endsWith('DESC')) ? '<' : '>';
+      const whereConditions = columns.map((column) => `${qb.alias}.${column}`).join(',');
       const whereParams = columns.map((column) => `:${column}`).join(',');
 
-      qb.where(
-        `(${whereConditions}) ${comparisonOperator} (${whereParams})`,
-        values,
-      );
+      qb.where(`(${whereConditions}) ${comparisonOperator} (${whereParams})`, values);
     }
 
     // order = ["likeCount_DESC", "id_DESC"]
@@ -56,9 +43,7 @@ export class CommonService {
       const [column, direction] = order[i].split('_');
 
       if (direction !== 'ASC' && direction !== 'DESC') {
-        throw new BadRequestException(
-          'Order는 ASC 또는 DESC으로 입력해주세요.',
-        );
+        throw new BadRequestException('Order는 ASC 또는 DESC으로 입력해주세요.');
       }
 
       if (i === 0) {
@@ -97,9 +82,7 @@ export class CommonService {
     });
 
     const cursorObj = { values, order };
-    const nextCursor = Buffer.from(JSON.stringify(cursorObj)).toString(
-      'base64',
-    );
+    const nextCursor = Buffer.from(JSON.stringify(cursorObj)).toString('base64');
 
     return nextCursor;
   }

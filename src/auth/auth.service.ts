@@ -1,8 +1,4 @@
-import {
-  BadRequestException,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Role, User } from 'src/user/entity/user.entity';
 import { Repository } from 'typeorm';
@@ -62,9 +58,7 @@ export class AuthService {
     try {
       const payload = await this.jwtService.verifyAsync(token, {
         secret: this.configService.get<string>(
-          isRefreshToken
-            ? envVariableKeys.refreshTokenSecret
-            : envVariableKeys.accessTokenSecret,
+          isRefreshToken ? envVariableKeys.refreshTokenSecret : envVariableKeys.accessTokenSecret,
         ),
       });
 
@@ -87,12 +81,8 @@ export class AuthService {
   }
 
   async issueToken(user: { id: number; role: Role }, isRefreshToken: boolean) {
-    const accessTokenSecret = this.configService.get<string>(
-      envVariableKeys.accessTokenSecret,
-    );
-    const refreshTokenSecret = this.configService.get<string>(
-      envVariableKeys.refreshTokenSecret,
-    );
+    const accessTokenSecret = this.configService.get<string>(envVariableKeys.accessTokenSecret);
+    const refreshTokenSecret = this.configService.get<string>(envVariableKeys.refreshTokenSecret);
 
     return this.jwtService.signAsync(
       {
@@ -116,9 +106,7 @@ export class AuthService {
       throw new BadRequestException('이미 가입한 이메일 입니다.');
     }
 
-    const hashRounds = this.configService.get<number>(
-      envVariableKeys.hashRounds,
-    );
+    const hashRounds = this.configService.get<number>(envVariableKeys.hashRounds);
     const hash = await bcrypt.hash(password, hashRounds);
 
     await this.userRepository.save({ email, password: hash });
@@ -144,14 +132,8 @@ export class AuthService {
     }
 
     return {
-      accessToken: await this.issueToken(
-        { id: user.id, role: user.role },
-        false,
-      ),
-      refreshToken: await this.issueToken(
-        { id: user.id, role: user.role },
-        true,
-      ),
+      accessToken: await this.issueToken({ id: user.id, role: user.role }, false),
+      refreshToken: await this.issueToken({ id: user.id, role: user.role }, true),
     };
   }
 }

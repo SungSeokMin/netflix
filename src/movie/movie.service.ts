@@ -33,8 +33,7 @@ export class MovieService {
       qb.where('movie.title Like :title', { title: `%${title}%` });
     }
 
-    const { nextCursor } =
-      await this.commonService.applyCursorPaginationParamsToQb(qb, dto);
+    const { nextCursor } = await this.commonService.applyCursorPaginationParamsToQb(qb, dto);
 
     const [data, count] = await qb.getManyAndCount();
 
@@ -237,11 +236,7 @@ export class MovieService {
     }
 
     // await this.movieRepository.delete(id);
-    await this.movieRepository
-      .createQueryBuilder()
-      .delete()
-      .where('id = :id', { id })
-      .execute();
+    await this.movieRepository.createQueryBuilder().delete().where('id = :id', { id }).execute();
     await this.movieDetailRepository.delete(movie.detail.id);
 
     return id;
