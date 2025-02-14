@@ -9,6 +9,8 @@ import { Director } from 'src/director/entity/director.entity';
 import { Genre } from 'src/genre/entity/genre.entity';
 import { GetMoviesDto } from './dto/get-movies.dto';
 import { CommonService } from 'src/common/common.service';
+import { join } from 'path';
+import { rename } from 'fs/promises';
 
 @Injectable()
 export class MovieService {
@@ -61,7 +63,7 @@ export class MovieService {
   }
 
   async create(createMovieDto: CreateMovieDto, qr: QueryRunner) {
-    const { title, detail, directorId, genreIds } = createMovieDto;
+    const { title, detail, directorId, genreIds, movieFileName } = createMovieDto;
 
     const director = await qr.manager.findOne(Director, {
       where: { id: directorId },
@@ -90,11 +92,24 @@ export class MovieService {
 
     const movieDetailId = movieDetail.identifiers[0].id;
 
+    const movieFolder = join('public', 'movie');
+    const tempFolder = join('public', 'temp');
+
+    await rename(
+      join(process.cwd(), tempFolder, movieFileName),
+      join(process.cwd(), movieFolder, movieFileName),
+    );
+
     const movie = await qr.manager
       .createQueryBuilder()
       .insert()
       .into(Movie)
-      .values({ title, detail: { id: movieDetailId }, director })
+      .values({
+        title,
+        detail: { id: movieDetailId },
+        director,
+        movieFilePath: join(movieFolder, movieFileName),
+      })
       .execute();
 
     const movieId = movie.identifiers[0].id;

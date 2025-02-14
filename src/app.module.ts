@@ -9,19 +9,22 @@ import { UserModule } from './user/user.module';
 import typeOrmConfig from './config/typeorm.config';
 import envConfig from './config/env.config';
 import { BearerTokenMiddleware } from './auth/middleware/bearer-token.middleware';
-import providers from './config/provider.config';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import serveStaticConfig from './config/serve-static.config';
+import providersConfig from './config/provider.config';
 
 @Module({
   imports: [
     ConfigModule.forRoot(envConfig),
     TypeOrmModule.forRootAsync(typeOrmConfig),
+    ServeStaticModule.forRoot(serveStaticConfig),
     MovieModule,
     DirectorModule,
     GenreModule,
     UserModule,
     AuthModule,
   ],
-  providers,
+  providers: providersConfig,
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

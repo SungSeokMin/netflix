@@ -35,6 +35,6 @@ const exceptionFilters: Provider[] = [
   },
 ];
 
-const providers: Provider[] = [...guards, ...interceptors, ...exceptionFilters];
+const providersConfig: Provider[] = [...guards, ...interceptors, ...exceptionFilters];
 
-export default providers;
+export default providersConfig;
