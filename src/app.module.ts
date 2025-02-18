@@ -12,12 +12,14 @@ import { BearerTokenMiddleware } from './auth/middleware/bearer-token.middleware
 import { ServeStaticModule } from '@nestjs/serve-static';
 import serveStaticConfig from './config/serve-static.config';
 import providersConfig from './config/provider.config';
+import { CacheModule } from '@nestjs/cache-manager';
 
 @Module({
   imports: [
     ConfigModule.forRoot(envConfig),
     TypeOrmModule.forRootAsync(typeOrmConfig),
     ServeStaticModule.forRoot(serveStaticConfig),
+    CacheModule.register({ ttl: 3000, isGlobal: true }),
     MovieModule,
     DirectorModule,
     GenreModule,

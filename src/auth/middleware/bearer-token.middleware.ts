@@ -1,5 +1,7 @@
+import { Cache, CACHE_MANAGER } from '@nestjs/cache-manager';
 import {
   BadRequestException,
+  Inject,
   Injectable,
   NestMiddleware,
   UnauthorizedException,
@@ -16,6 +18,8 @@ export interface RequestWithUser extends Request {
 @Injectable()
 export class BearerTokenMiddleware implements NestMiddleware {
   constructor(
+    @Inject(CACHE_MANAGER)
+    private readonly cacheManager: Cache,
     private readonly configService: ConfigService,
     private readonly jwtService: JwtService,
   ) {}
@@ -31,6 +35,15 @@ export class BearerTokenMiddleware implements NestMiddleware {
     try {
       const token = this.validateBearerToken(header);
 
+      const tokenKey = `TOKEN_${token}`;
+
+      const cachedPayload = await this.cacheManager.get(tokenKey);
+
+      if (cachedPayload) {
+        req.user = cachedPayload;
+        return next();
+      }
+
       const decodedPayload = this.jwtService.decode(token);
 
       if (decodedPayload.type !== 'access' && decodedPayload.type !== 'refresh') {
@@ -45,6 +58,14 @@ export class BearerTokenMiddleware implements NestMiddleware {
       const payload = await this.jwtService.verifyAsync(token, {
         secret: this.configService.get<string>(secretKey),
       });
+
+      /// payload['exp'] epoch time seconds
+      const expiryDate = +new Date(payload['exp'] * 1000);
+      const now = +Date.now();
+
+      const diffrenceInSeconds = expiryDate - now / 1000;
+
+      await this.cacheManager.set(tokenKey, payload, Math.max((diffrenceInSeconds - 30) * 1000, 1));
 
       req.user = payload;
       next();
