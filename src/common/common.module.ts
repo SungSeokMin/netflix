@@ -5,6 +5,8 @@ import { MulterModule } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { join } from 'path';
 import { v4 } from 'uuid';
+import { TasksService } from './task.service';
+import { DefaultLogger } from './logger/default.logger';
 
 @Module({
   imports: [
@@ -27,8 +29,8 @@ import { v4 } from 'uuid';
       }),
     }),
   ],
-  providers: [CommonService],
-  exports: [CommonService],
+  providers: [CommonService, TasksService, DefaultLogger],
   controllers: [CommonController],
+  exports: [CommonService, DefaultLogger],
 })
 export class CommonModule {}

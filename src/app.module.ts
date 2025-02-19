@@ -13,6 +13,10 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import serveStaticConfig from './config/serve-static.config';
 import providersConfig from './config/provider.config';
 import { CacheModule } from '@nestjs/cache-manager';
+import { ScheduleModule } from '@nestjs/schedule';
+import { WinstonModule } from 'nest-winston';
+import * as winston from 'winston';
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -20,6 +24,33 @@ import { CacheModule } from '@nestjs/cache-manager';
     TypeOrmModule.forRootAsync(typeOrmConfig),
     ServeStaticModule.forRoot(serveStaticConfig),
     CacheModule.register({ ttl: 3000, isGlobal: true }),
+    ScheduleModule.forRoot(),
+    WinstonModule.forRoot({
+      level: 'debug',
+      transports: [
+        new winston.transports.Console({
+          format: winston.format.combine(
+            winston.format.colorize({ all: true }),
+            winston.format.timestamp(),
+            winston.format.printf(
+              (info) =>
+                `${new Date(info.timestamp as string).toLocaleString()} [${info.context}] ${info.level} ${info.message}`,
+            ),
+          ),
+        }),
+        new winston.transports.File({
+          dirname: join(process.cwd(), 'logs'),
+          filename: 'logs.log',
+          format: winston.format.combine(
+            winston.format.timestamp(),
+            winston.format.printf(
+              (info) =>
+                `${new Date(info.timestamp as string).toLocaleString()} [${info.context}] ${info.level} ${info.message}`,
+            ),
+          ),
+        }),
+      ],
+    }),
     MovieModule,
     DirectorModule,
     GenreModule,
